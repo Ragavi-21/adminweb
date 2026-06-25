@@ -9,13 +9,22 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = login(username, password);
-    if (!result.success) {
-      setError(result.message || 'Login failed');
-    } else {
-      setError('');
+    setSubmitting(true);
+    try {
+      const result = await login(username, password);
+      if (!result.success) {
+        setError(result.message || 'Login failed');
+      } else {
+        setError('');
+      }
+    } catch (err) {
+      setError(err.message || 'Could not reach the server.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -39,8 +48,8 @@ export const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="login-button">
-          Sign In
+        <button type="submit" className="login-button" disabled={submitting}>
+          {submitting ? 'Signing in…' : 'Sign In'}
         </button>
       </form>
     </div>

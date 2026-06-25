@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useDashboardData } from '../services/api';
+import { login as loginRequest } from '../services/adminApi';
 
 const DashboardContext = createContext();
 
@@ -30,7 +31,10 @@ export const DashboardProvider = ({ children }) => {
     setSelectedPageId(null);
   };
 
-  const currentUser = { name: 'Super Admin', role: 'Administrator', initials: 'SA' };
+  const [currentUser, setCurrentUser] = useState(() => {
+    const cached = localStorage.getItem('dendo_admin_user');
+    return cached ? JSON.parse(cached) : { name: 'Super Admin', role: 'Administrator', initials: 'SA' };
+  });
 
   // authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -38,14 +42,16 @@ export const DashboardProvider = ({ children }) => {
     return stored === 'true';
   });
 
-  const login = (username, password) => {
-    // Simple hard‑coded admin credentials (you can replace with real auth later)
-    if (username === 'admin' && password === 'admin123') {
+  const login = async (username, password) => {
+    const result = await loginRequest(username, password);
+    if (result.success) {
       setIsAuthenticated(true);
+      setCurrentUser(result.user);
       localStorage.setItem('dendo_admin_auth', 'true');
+      localStorage.setItem('dendo_admin_user', JSON.stringify(result.user));
       return { success: true };
     }
-    return { success: false, message: 'Invalid credentials' };
+    return { success: false, message: result.message };
   };
 
   const logout = () => {
