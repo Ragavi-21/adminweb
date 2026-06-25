@@ -21,6 +21,14 @@ const STATUS_META = {
   rejected: { label: 'Rejected', badge: 'badge-error'   },
 };
 
+// Backend stores paths like "uploads/riders/169-photo.jpg" (filePath() in
+// dendoreg/backend/upload.js) — keep the subfolder, just normalize slashes.
+const buildFileUrl = (p) => {
+  if (!p) return null;
+  const clean = String(p).replace(/\\/g, '/').replace(/^\/+/, '');
+  return `${DENDO_REG_API_BASE_URL}/${clean}`;
+};
+
 const FileLinks = ({ paths, label }) => {
   if (!paths || paths.length === 0) return <span style={{ color: 'var(--text-secondary)' }}>—</span>;
   const list = Array.isArray(paths) ? paths : [paths];
@@ -29,7 +37,7 @@ const FileLinks = ({ paths, label }) => {
       {list.map((p, i) => (
         <a
           key={i}
-          href={`${DENDO_REG_API_BASE_URL}/uploads/${p.replace(/^.*[\\/]/, '')}`}
+          href={buildFileUrl(p)}
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: 'var(--accent-color)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}
@@ -251,7 +259,7 @@ export const DendoReg = () => {
                             <strong>{r.first_name} {r.last_name}</strong>
                             {r.profile_picture_path && (
                               <a
-                                href={`${DENDO_REG_API_BASE_URL}/uploads/${r.profile_picture_path.replace(/^.*[\\/]/, '')}`}
+                                href={buildFileUrl(r.profile_picture_path)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{ display: 'block', color: 'var(--accent-color)', fontSize: 11 }}

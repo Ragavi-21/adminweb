@@ -1,0 +1,12 @@
+[submodule "dendo"]
+	path = dendo
+	url = https://github.com/Ragavi-21/dendo.git
+[submodule "Cravix"]
+	path = Cravix
+	url = https://github.com/Ragavi-21/cravix.git
+[submodule "Work portfolio"]
+	path = Work portfolio
+	url = https://github.com/Ragavi-21/DendoPortfolio.git
+[submodule "dendoreg"]
+	path = dendoreg
+	url = https://github.com/Ragavi-21/dendoreg.git
